@@ -16,7 +16,7 @@
 
 #include <inttypes.h>
 
-//#define LOG_NDEBUG 0
+#define LOG_NDEBUG 0
 #define LOG_TAG "CameraSource"
 #include <utils/Log.h>
 
@@ -309,6 +309,8 @@ static void getSupportedVideoSizes(
         ALOGD("Camera does not support setVideoSize()");
         params.getSupportedPreviewSizes(sizes);
         *isSetVideoSizeSupported = false;
+    } else {
+      ALOGD("Camera does support setVideoSize()");
     }
 }
 
@@ -347,6 +349,7 @@ status_t CameraSource::configureCamera(
         int32_t width, int32_t height,
         int32_t frameRate) {
     ALOGV("configureCamera");
+    ALOGD("configureCamera called with width %d and height %d", width, height);
     Vector<Size> sizes;
     bool isSetVideoSizeSupportedByCamera = true;
     getSupportedVideoSizes(*params, &isSetVideoSizeSupportedByCamera, sizes);
@@ -356,9 +359,12 @@ status_t CameraSource::configureCamera(
             ALOGE("Video dimension (%dx%d) is unsupported", width, height);
             return BAD_VALUE;
         }
+        ALOGD("Video dimension (%dx%d) is supported", width, height);
         if (isSetVideoSizeSupportedByCamera) {
+            ALOGD("Setting video size is supported - setting VIDEO to %dx%d", width, height);
             params->setVideoSize(width, height);
         } else {
+            ALOGD("Setting video size is NOT supported - setting PREVIEW to %dx%d", width, height);
             params->setPreviewSize(width, height);
         }
         isCameraParamChanged = true;
@@ -433,10 +439,14 @@ status_t CameraSource::checkVideoSize(
     params.getSupportedVideoSizes(sizes);
     if (sizes.size() == 0) {
         // video size is the same as preview size
+        ALOGD("Video size is the same as preview size");
         params.getPreviewSize(&frameWidthActual, &frameHeightActual);
+        ALOGD("Video size now is %dx%d", frameWidthActual, frameHeightActual);
     } else {
         // video size may not be the same as preview
+        ALOGD("Video size is not the same as preview size");
         params.getVideoSize(&frameWidthActual, &frameHeightActual);
+        ALOGD("Video size now is %dx%d", frameWidthActual, frameHeightActual);
     }
     if (frameWidthActual < 0 || frameHeightActual < 0) {
         ALOGE("Failed to retrieve video frame size (%dx%d)",
@@ -451,7 +461,8 @@ status_t CameraSource::checkVideoSize(
             ALOGE("Failed to set video frame size to %dx%d. "
                     "The actual video size is %dx%d ", width, height,
                     frameWidthActual, frameHeightActual);
-            return UNKNOWN_ERROR;
+            ALOGD("But we're not gonna report no error, no way!!!");
+            // return UNKNOWN_ERROR;
         }
     }
 
