@@ -671,10 +671,12 @@ private:
         AUDIO_HW_SET_VOICE_VOLUME,      // set_voice_volume
         AUDIO_HW_SET_PARAMETER,         // set_parameters
         AUDIO_HW_GET_INPUT_BUFFER_SIZE, // get_input_buffer_size
+#ifndef MR0_AUDIO_BLOB
         AUDIO_HW_GET_MASTER_VOLUME,     // get_master_volume
+        AUDIO_HW_GET_MASTER_MUTE,       // get_master_mute
+#endif
         AUDIO_HW_GET_PARAMETER,         // get_parameters
         AUDIO_HW_SET_MASTER_MUTE,       // set_master_mute
-        AUDIO_HW_GET_MASTER_MUTE,       // get_master_mute
     };
 
     mutable     hardware_call_state                 mHardwareStatus;    // for dump only
